@@ -3,6 +3,7 @@ const TYPES = [`palace`, `flat`, `house`, `bungalow`];
 const TIMES = [`12:00`, `13:00`, `14:00`];
 const FEATURES = [`wifi`, `dishwasher`, `parking`, `washer`, `elevator`, `conditioner`];
 const URLS = [`http://o0.github.io/assets/images/tokyo/hotel1.jpg`, `http://o0.github.io/assets/images/tokyo/hotel2.jpg`, `http://o0.github.io/assets/images/tokyo/hotel3.jpg`];
+const mapPins = document.querySelector(.map__pins);
 const xCoordinates = {
   MIN: 0,
   MAX: 1200,
@@ -27,8 +28,7 @@ function shuffle(array) {
 
 const getRandomArray = (items) => {
   shuffle(items)
-  let clip = items.slice(0, getRandomInteger(1, items.length));
-  return clip;
+  return items.slice(0, getRandomInteger(1, items.length));
 }
 
 const generatePins = function () {
@@ -71,8 +71,17 @@ const fragment = document.createDocumentFragment();
 
 const similarPin = document.querySelector(`#pin`).content.querySelector(`button`);
 
-for (let i = 0; i < pins.length; i++) {
+for (let element of pins) {
   const newPin = similarPin.cloneNode(true);
+  newPin.style = left: {{pins[i].location.x + смещение по X}}px; top: {{pins[i].location.y + смещение по Y}}px;; //??
+
+  const imageInPin = newPin.querySelector(`img`);
+  imageInPin.src = pins[i].author.avatar;
+  imageInPin.alt = pins[i].offer.title;
+
+  console.log(newPin);
 
   fragment.appendChild(newPin);
 }
+
+mapPins.appendChild(fragment);
