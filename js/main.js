@@ -3,19 +3,12 @@ const TYPES = [`palace`, `flat`, `house`, `bungalow`];
 const TIMES = [`12:00`, `13:00`, `14:00`];
 const FEATURES = [`wifi`, `dishwasher`, `parking`, `washer`, `elevator`, `conditioner`];
 const URLS = [`http://o0.github.io/assets/images/tokyo/hotel1.jpg`, `http://o0.github.io/assets/images/tokyo/hotel2.jpg`, `http://o0.github.io/assets/images/tokyo/hotel3.jpg`];
-const mapPins = document.querySelector(.map__pins);
-const xCoordinates = {
-  MIN: 0,
-  MAX: 1200,
-};
-const yCoordinates = {
-  MIN: 130,
-  MAX: 630,
-};
 
 const getRandomInteger = function (min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 };
+
+const coordinates = { x: getRandomInteger(0, 1200), y: getRandomInteger(130, 630)};
 
 const getRandomItem = function (items) {
   var rand = Math.floor(Math.random() * items.length);
@@ -41,7 +34,7 @@ const generatePins = function () {
       },
       "offer": {
         "title": `Title of offer`,
-        "address": "600, 350",
+        "address": `location`,
         "price": getRandomInteger(1000, 10000),
         "type": getRandomItem(TYPES),
         "rooms": getRandomInteger(1, 3),
@@ -52,10 +45,7 @@ const generatePins = function () {
         "description": `some description`,
         "photos": getRandomArray(URLS),
       },
-      "location": {
-        "x": getRandomInteger(xCoordinates.MIN, xCoordinates.MAX),
-        "y": getRandomInteger(yCoordinates.MIN, yCoordinates.MAX),
-      }
+      "location": coordinates
     };
     pins.push(pinItem);
   }
@@ -65,23 +55,33 @@ const generatePins = function () {
 const pins = generatePins();
 console.log(pins);
 
-document.querySelector('.map').classList.remove(`map--faded`);
+const map = document.querySelector(`.map`);
+const pinsBlock = document.querySelector(`.map__pins`);
+const pinTemplate = document.querySelector(`#pin`).content.querySelector(`.map__pin`);
 
-const fragment = document.createDocumentFragment();
+const newPin = pinTemplate.cloneNode(true);
+    newPin.style.left = pins[i].coordinates.x + `px`; //+ смещение по X
+    newPin.style.top = pins[i].coordinates.y + `px`; //+ смещение по Y
 
-const similarPin = document.querySelector(`#pin`).content.querySelector(`button`);
+    const imageInPin = newPin.querySelector(`img`);
+    imageInPin.src = pins[i].author.avatar;
+    imageInPin.alt = pins[i].offer.title;
 
-for (let element of pins) {
-  const newPin = similarPin.cloneNode(true);
-  newPin.style = left: {{pins[i].location.x + смещение по X}}px; top: {{pins[i].location.y + смещение по Y}}px;; //??
-
-  const imageInPin = newPin.querySelector(`img`);
-  imageInPin.src = pins[i].author.avatar;
-  imageInPin.alt = pins[i].offer.title;
-
-  console.log(newPin);
-
-  fragment.appendChild(newPin);
+function mapToggle () {
+  if (map.classList.contains(`map--faded`)) {
+    map.classList.remove(`map--faded`)
+  } else {
+    map.classList.add(`map--faded`)
+  }
 }
 
-mapPins.appendChild(fragment);
+function renderPinsToMap (items) {
+  const fragment = document.createDocumentFragment();
+
+  for (let element of pins) {
+    console.log(newPin);
+    fragment.appendChild(newPin);
+  }
+
+  pinsBlock.appendChild(fragment);
+}
