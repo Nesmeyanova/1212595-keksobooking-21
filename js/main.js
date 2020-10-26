@@ -1,33 +1,36 @@
+'use strict';
+
 const PINS_COUNT = 8;
 const TYPES = [`palace`, `flat`, `house`, `bungalow`];
 const TIMES = [`12:00`, `13:00`, `14:00`];
 const FEATURES = [`wifi`, `dishwasher`, `parking`, `washer`, `elevator`, `conditioner`];
 const URLS = [`http://o0.github.io/assets/images/tokyo/hotel1.jpg`, `http://o0.github.io/assets/images/tokyo/hotel2.jpg`, `http://o0.github.io/assets/images/tokyo/hotel3.jpg`];
+const PINS_WIDTH = 50;
+const PINS_HEIGHT = 70;
 
 const getRandomInteger = function (min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 };
 
-const coordinates = { x: getRandomInteger(0, 1200), y: getRandomInteger(130, 630)};
-
 const getRandomItem = function (items) {
-  var rand = Math.floor(Math.random() * items.length);
-    return items[rand];
+  let rand = Math.floor(Math.random() * items.length);
+  return items[rand];
 };
 
-function shuffle(array) {
+const shuffle = function (array) {
   array.sort(() => Math.random() - 0.5);
-}
+};
 
 const getRandomArray = (items) => {
-  shuffle(items)
+  shuffle(items);
   return items.slice(0, getRandomInteger(1, items.length));
-}
+};
 
 const generatePins = function () {
   const pins = [];
 
   for (let i = 1; i <= PINS_COUNT; i++) {
+    const coordinates = {x: getRandomInteger(0, 1200), y: getRandomInteger(130, 630)};
     const pinItem = {
       "author": {
         "avatar": `img/avatars/user0${i}.png`,
@@ -53,35 +56,37 @@ const generatePins = function () {
 };
 
 const pins = generatePins();
-console.log(pins);
 
 const map = document.querySelector(`.map`);
 const pinsBlock = document.querySelector(`.map__pins`);
 const pinTemplate = document.querySelector(`#pin`).content.querySelector(`.map__pin`);
 
-const newPin = pinTemplate.cloneNode(true);
-    newPin.style.left = pins[i].coordinates.x + `px`; //+ смещение по X
-    newPin.style.top = pins[i].coordinates.y + `px`; //+ смещение по Y
-
-    const imageInPin = newPin.querySelector(`img`);
-    imageInPin.src = pins[i].author.avatar;
-    imageInPin.alt = pins[i].offer.title;
-
-function mapToggle () {
+const mapToggle = function () {
   if (map.classList.contains(`map--faded`)) {
-    map.classList.remove(`map--faded`)
+    map.classList.remove(`map--faded`);
   } else {
-    map.classList.add(`map--faded`)
+    map.classList.add(`map--faded`);
   }
-}
+};
+mapToggle();
 
-function renderPinsToMap (items) {
+const renderPinsToMap = function () {
   const fragment = document.createDocumentFragment();
 
   for (let element of pins) {
-    console.log(newPin);
+    const newPin = pinTemplate.cloneNode(true);
+    newPin.style.left = element.location.x + PINS_WIDTH / 2 + `px`;
+    newPin.style.top = element.location.y + PINS_HEIGHT + `px`;
+
+    const imageInPin = newPin.querySelector(`img`);
+    imageInPin.src = element.author.avatar;
+    imageInPin.alt = element.offer.title;
     fragment.appendChild(newPin);
+
+
   }
 
   pinsBlock.appendChild(fragment);
-}
+};
+
+renderPinsToMap();
