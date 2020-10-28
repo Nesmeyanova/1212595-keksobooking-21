@@ -8,16 +8,16 @@ const URLS = [`http://o0.github.io/assets/images/tokyo/hotel1.jpg`, `http://o0.g
 const PINS_WIDTH = 50;
 const PINS_HEIGHT = 70;
 
-const getRandomInteger = function (min, max) {
+const getRandomInteger = (min, max) => {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 };
 
-const getRandomItem = function (items) {
+const getRandomItem = (items) => {
   let rand = Math.floor(Math.random() * items.length);
   return items[rand];
 };
 
-const shuffle = function (array) {
+const shuffle = (array) => {
   array.sort(() => Math.random() - 0.5);
 };
 
@@ -26,7 +26,7 @@ const getRandomArray = (items) => {
   return items.slice(0, getRandomInteger(1, items.length));
 };
 
-const generatePins = function () {
+const generatePins = () => {
   const pins = [];
 
   for (let i = 1; i <= PINS_COUNT; i++) {
@@ -56,12 +56,11 @@ const generatePins = function () {
 };
 
 const pins = generatePins();
-
 const map = document.querySelector(`.map`);
 const pinsBlock = document.querySelector(`.map__pins`);
 const pinTemplate = document.querySelector(`#pin`).content.querySelector(`.map__pin`);
 
-const mapToggle = function () {
+const mapToggle = () => {
   if (map.classList.contains(`map--faded`)) {
     map.classList.remove(`map--faded`);
   } else {
@@ -70,7 +69,7 @@ const mapToggle = function () {
 };
 mapToggle();
 
-const renderPinsToMap = function () {
+const renderPinsToMap = () => {
   const fragment = document.createDocumentFragment();
 
   for (let element of pins) {
@@ -88,5 +87,34 @@ const renderPinsToMap = function () {
 
   pinsBlock.appendChild(fragment);
 };
-
 renderPinsToMap();
+
+const cardTemplate = document.querySelector(`#card`).content.querySelector(`map__card`);
+const mapFilters = document.querySelector(`.map__filters-container`);
+const POPUP_TYPE = {
+  'flat': `Квартира`,
+  'bungalo': `Бунгало`,
+  'house': `Дом`,
+  'palace': `Дворец`
+};
+const popupFeatures = FEATURES;
+
+const renderCard = (object) => {
+  const card = cardTemplate.cloneNode(true);
+
+  card.querySelector(`.popup__title`).textContent = object.offer.title;
+  card.querySelector(`.popup__text--address`).textContent = object.offer.address;
+  card.querySelector(`.popup__text--price`).textContent = object.offer.price + `₽/ночь`;
+  card.querySelector(`.popup__type`).textContent = POPUP_TYPE;
+  card.querySelector(`.popup__text--capacity`).textContent = object.offer.rooms + ` комнаты для ` + object.offer.guests + ` гостей`;
+  card.querySelector(`.popup__text--time`).textContent = `Заезд после ` + object.offer.checkin + ` , выезд до ` + object.offer.checkout;
+  card.querySelector(`.popup__description`).textContent = object.offer.description;
+  card.querySelector(`.popup__photos`) = object.offer.photos;
+  card.querySelector(`.popup__avatar`).src = object.author.avatar;
+
+  renderPhotoToCard(object.offer.photos, card);
+
+  return card;
+};
+
+mapFilters.before(map);
