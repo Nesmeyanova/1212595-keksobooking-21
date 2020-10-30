@@ -89,32 +89,43 @@ const renderPinsToMap = () => {
 };
 renderPinsToMap();
 
-const cardTemplate = document.querySelector(`#card`).content.querySelector(`map__card`);
+const cardTemplate = document.querySelector(`#card`).content.querySelector(`.map__card`);
 const mapFilters = document.querySelector(`.map__filters-container`);
 const POPUP_TYPE = {
-  'flat': `Квартира`,
-  'bungalo': `Бунгало`,
-  'house': `Дом`,
-  'palace': `Дворец`
+  flat: `Квартира`,
+  bungalo: `Бунгало`,
+  house: `Дом`,
+  palace: `Дворец`
 };
-const popupFeatures = FEATURES;
 
-const renderCard = (object) => {
+const renderCard = (cardData) => {
   const card = cardTemplate.cloneNode(true);
 
-  card.querySelector(`.popup__title`).textContent = object.offer.title;
-  card.querySelector(`.popup__text--address`).textContent = object.offer.address;
-  card.querySelector(`.popup__text--price`).textContent = object.offer.price + `₽/ночь`;
-  card.querySelector(`.popup__type`).textContent = POPUP_TYPE;
-  card.querySelector(`.popup__text--capacity`).textContent = object.offer.rooms + ` комнаты для ` + object.offer.guests + ` гостей`;
-  card.querySelector(`.popup__text--time`).textContent = `Заезд после ` + object.offer.checkin + ` , выезд до ` + object.offer.checkout;
-  card.querySelector(`.popup__description`).textContent = object.offer.description;
-  card.querySelector(`.popup__photos`) = object.offer.photos;
-  card.querySelector(`.popup__avatar`).src = object.author.avatar;
+  card.querySelector(`.popup__title`).textContent = cardData.offer.title;
+  card.querySelector(`.popup__text--address`).textContent = cardData.offer.address;
+  card.querySelector(`.popup__text--price`).textContent = cardData.offer.price + `₽/ночь`;
+  card.querySelector(`.popup__type`).textContent = POPUP_TYPE[cardData.offer.type];
+  card.querySelector(`.popup__text--capacity`).textContent = cardData.offer.rooms + ` комнаты для ` + cardData.offer.guests + ` гостей`;
+  card.querySelector(`.popup__text--time`).textContent = `Заезд после ` + cardData.offer.checkin + ` , выезд до ` + cardData.offer.checkout;
+  card.querySelector(`.popup__description`).textContent = cardData.offer.description;
 
-  renderPhotoToCard(object.offer.photos, card);
+  const fragment = document.createDocumentFragment();
+
+  for (let src of cardData.offer.photos) {
+    const image = document.createElement(`img`);
+    image.src = src;
+    image.width = 45;
+    image.height = 40;
+    image.classList.add(`popup__photo`);
+    fragment.appendChild(image);
+  }
+
+  card.querySelector(`.popup__photos`).appendChild(fragment);
+  card.querySelector(`.popup__avatar`).src = cardData.author.avatar;
 
   return card;
 };
 
-mapFilters.before(map);
+const cardElement = renderCard(pins[0]);
+
+mapFilters.before(cardElement);
